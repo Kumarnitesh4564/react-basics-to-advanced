@@ -7,12 +7,30 @@ import './App.css'
 function App() {
   const [counter, setCounter]  = useState(15);
 
+  // const addValue = () => {
+  //   if(counter+3 <= 50) {
+  //     setCounter(prevCounter => prevCounter + 1);
+  //     setCounter(prevCounter => prevCounter + 1);
+  //     setCounter(prevCounter => prevCounter + 1);
+  //   }
+  //   else setCounter(50);
+  // }
+
+  // const removeValue = () => {
+  //   if(counter >= 3) {
+  //     setCounter(prevCounter => prevCounter - 1);
+  //     setCounter(prevCounter => prevCounter - 1);
+  //     setCounter(prevCounter => prevCounter - 1);
+  //   }
+  //   else setCounter(0);
+  // }
+
   const addValue = () => {
-    if(counter <= 49) setCounter(counter + 1);
+    setCounter(prev => Math.min(prev + 3, 50))
   }
 
   const removeValue = () => {
-    if(counter >= 1) setCounter(counter - 1);
+    setCounter(prev => Math.max(prev - 3, 0))
   }
 
   return (
@@ -30,5 +48,6 @@ function App() {
     </>
   )
 }
+
 
 export default App
