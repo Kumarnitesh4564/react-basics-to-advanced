@@ -1,10 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { removeTodo } from '../features/todo/todoSlice'
+import { removeTodo, updateTodo } from '../features/todo/todoSlice'
 
 function Todos() {
     const todos = useSelector(state => state.todos)
     const dispatch = useDispatch()
+
+    const [editId, setEditId] = useState(null) 
+    const [editMsg, setEditMsg] = useState("")
+
+    const handleEdit = (todo) => {
+      setEditId(todo.id)
+      setEditMsg(todo.text)
+    }
+
+    const handleSave = (id) => {
+      if(!editMsg.trim()) return
+      dispatch(updateTodo({id, text: editMsg}))
+      setEditId(null)
+    }
+
 
   return (
     <div className="w-full max-w-2xl mx-auto mt-6">
@@ -16,27 +31,52 @@ function Todos() {
             key={todo.id}
             className="flex justify-between items-center bg-gradient-to-r from-zinc-800 to-zinc-900 px-5 py-3 rounded-lg shadow-md hover:shadow-lg transition duration-200"
           >
-            <div className='text-white text-md'>{todo.text}</div>
-
-            <button
-              onClick={() => dispatch(removeTodo(todo.id))}
-              className="flex items-center justify-center bg-red-500 hover:bg-red-600 transition duration-200 p-2 rounded-md"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.8}
-                stroke="currentColor"
-                className="w-5 h-5 text-white"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79"
+            
+            {/* 🔹 TEXT / INPUT (you control toggle later) */}
+            <div className="flex-1 mr-3">
+              {editId === todo.id ? (
+                <input
+                  type="text"
+                  className="w-full bg-zinc-700 text-white px-3 py-1 rounded outline-none"
+                  value={editMsg}
+                  onChange={(e) => setEditMsg(e.target.value)}
                 />
-              </svg>
-            </button>
+              ) : (
+                <span className="text-white text-md">
+                  {todo.text}
+                </span>
+              )}
+            </div>
+
+            {/* 🔹 BUTTONS */}
+            <div className="flex gap-2">
+
+              {/* ✏️ Edit / Save */}
+              {editId === todo.id ? (
+                <button
+                  onClick={() => handleSave(todo.id)}
+                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md transition"
+                >
+                  Save
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleEdit(todo)}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md transition"
+                >
+                  Edit
+                </button>
+              )}
+
+              {/* ❌ Delete */}
+              <button
+                onClick={() => dispatch(removeTodo(todo.id))}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition duration-200"
+              >
+                Delete
+              </button>
+
+            </div>
           </li>
         ))}
       </ul>
