@@ -1,5 +1,5 @@
 import config from '../config/config.js';
-import { Client, ID, Databases, Storage, Query } from "appwrite";
+import { Client, ID, Databases, Query } from "appwrite";
 
 export class PostService {
     client = new Client();
@@ -18,52 +18,60 @@ export class PostService {
             return await this.databases.createDocument(
                 config.appWriteDatabaseId,
                 config.appWriteCollectionId,
-                slug,
-                { title, content, featuredImage, status, userId }
+                ID.unique(),
+                { title, slug, content, featuredImage, status, userId }
             );
         } catch (error) {
-            console.log("createPost error", error);
-            return null;
+            console.error("createPost error", error);
+            if (error.message?.includes('Unknown attribute: "slug"') || error.message?.includes('Invalid document structure')) {
+                throw new Error('Appwrite collection is missing the slug attribute. Add a string attribute named "slug" in your Appwrite collection schema.');
+            }
+            throw error;
         }
     }
 
-    async updatePost(slug, { title, content, featuredImage, status }) {
+    async updatePost(documentId, { title, slug, content, featuredImage, status }) {
         try {
             return await this.databases.updateDocument(
                 config.appWriteDatabaseId,
                 config.appWriteCollectionId,
-                slug,
-                { title, content, featuredImage, status }
+                documentId,
+                { title, slug, content, featuredImage, status }
             );
         } catch (error) {
-            console.log("updatePost error", error);
+            console.error("updatePost error", error);
+            if (error.message?.includes('Unknown attribute: "slug"') || error.message?.includes('Invalid document structure')) {
+                throw new Error('Appwrite collection is missing the slug attribute. Add a string attribute named "slug" in your Appwrite collection schema.');
+            }
             return null;
         }
     }
 
-    async deletePost(slug) {
+    async deletePost(documentId) {
         try {
             await this.databases.deleteDocument(
                 config.appWriteDatabaseId,
                 config.appWriteCollectionId,
-                slug
+                documentId
             );
             return true;
         } catch (error) {
-            console.log("deletePost error", error);
+            console.error("deletePost error", error);
             return false;
         }
     }
 
     async getPost(slug) {
         try {
-            return await this.databases.getDocument(
+            const result = await this.databases.listDocuments(
                 config.appWriteDatabaseId,
                 config.appWriteCollectionId,
-                slug
+                [Query.equal("slug", slug)]
             );
+
+            return result.documents?.[0] || null;
         } catch (error) {
-            console.log("getPost error", error);
+            console.error("getPost error", error);
             return null;
         }
     }

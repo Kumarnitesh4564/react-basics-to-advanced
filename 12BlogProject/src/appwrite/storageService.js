@@ -21,8 +21,8 @@ export class StorageService {
                 file
             );
         } catch (error) {
-            console.log("uploadFile error", error);
-            return null;
+            console.error("uploadFile error", error);
+            throw error;
         }
     }
 

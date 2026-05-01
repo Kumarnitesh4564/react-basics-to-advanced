@@ -10,15 +10,14 @@ export default function RTE({name, control, label, defaultValue=""}) {
         <Controller 
         name={name || "content"}
         control={control}
-        render={({field: {onchange}}) =>(
+        render={({ field }) =>(
             <Editor 
             apiKey='tyqx3mcfwdwcl6h58zwxn8wqffsxdgxypescpxpm5rkibku5'
-            initialValue={defaultValue}
+            value={field.value}
             init={{
-                initialValue: defaultValue,
                 height: 500,
                 menubar: true,
-                plugin: [
+                plugins: [
                     "image",
                     "advlist",
                     "autolink",
@@ -42,9 +41,9 @@ export default function RTE({name, control, label, defaultValue=""}) {
                 ],
                 toolbar:
                 "undo redo | blocks | image | bold italic forecolor | alignleft aligncenter bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |removeformat | help",
-                content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }"
+                content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
             }}
-            onEditorChange={onchange}
+            onEditorChange={field.onChange}
             />
         )}
         />

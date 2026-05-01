@@ -79,12 +79,18 @@ function PostForm({ post }) {
 
             } else {
                 // CREATE POST
+                const existingPost = await postService.getPost(data.slug)
+                if (existingPost) {
+                    setError('A post with this slug already exists. Please change the slug and try again.')
+                    return
+                }
+
                 const file = data.image[0]
                     ? await storageService.uploadFile(data.image[0])
                     : null
 
                 if (!file) {
-                    setError('Please upload a featured image')
+                    setError('Featured image upload failed. Please try again.')
                     return
                 }
 
